@@ -1,2 +1,2 @@
 # python-projects
-Ideas of easy and intermediate porjects to practice your python skills.
+Ideas of easy and intermediate projects to practice your Python skills.
