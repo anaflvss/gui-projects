@@ -1,5 +1,5 @@
 """
-Guess the number with a GUI. 
+'Guess the number!' with a GUI. 
 """
 import re
 import numpy as np
