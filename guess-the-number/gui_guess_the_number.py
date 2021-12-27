@@ -7,14 +7,16 @@ import PySimpleGUI as sg
 
 
 def string_checker(string: str):
+    """Checks if the input string is a valid integer between 0 ad 100."""
     if re.fullmatch("\d{1,3}", string):
         if 0 <= int(string) <= 100:
             return True
-        else:
-            return False
     return False
 
 
+# GUI
+
+## 1. Layout
 sg.theme("DarkAmber")
 layout = [
     [sg.Text("Guess the Number!", font=("Source Sans Pro", 14, "bold"))],
@@ -32,11 +34,13 @@ layout = [
     [sg.Button("Play again", key="PLAY AGAIN", size=(10, 0), visible=False)],
 ]
 
+## 2. Window
 window = sg.Window(
     "Guess the number", element_justification="c", resizable=True
 ).layout(layout)
 
 
+## 3. Window's logic
 random_int = np.random.randint(100)
 print(random_int)
 
@@ -48,10 +52,14 @@ while True:
     if event == None:
         break
 
+    # Make sure the user's input will be valid integers. If not, the program
+    # won't run.
     if not string_checker(values["X"]):
-        window["OUTPUT"].update("""Only numbers between 0 and 100 are valid. :)""")
+        window["OUTPUT"].update("Only numbers between 0 and 100 are valid. :)")
 
     else:
+        # If the input is valid, the conditions will adjust the guesses until the
+        # user gets it right
         if int(values["X"]) < random_int:
             window["OUTPUT"].update("Too low! Try again.")
 
@@ -61,8 +69,13 @@ while True:
         else:
             window["OUTPUT"].update("That's correct! How did you know?")
             window["SEND"].update(visible=False)
+
+            # When the guess is right, the play again button shows up on the
+            # screen.
             window["PLAY AGAIN"].update(visible=True)
 
+            # If Play again is pressed, the rest of the screen should return to
+            # initial layout.
             if event == "PLAY AGAIN":
                 random_int = np.random.randint(100)
                 print(random_int)
@@ -73,8 +86,6 @@ while True:
                 window["PLAY AGAIN"].update(visible=False)
 
                 continue
-
-    #
 
 
 window.close()
