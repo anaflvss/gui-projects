@@ -6,8 +6,8 @@ import numpy as np
 import PySimpleGUI as sg
 
 
-def string_checker(string: str):
-    """Checks if the input string is a valid integer between 0 ad 100."""
+def check_string(string: str):
+    """Checks if the input string is a valid integer between 0 and 100."""
     if re.fullmatch("\d{1,3}", string):
         if 0 <= int(string) <= 100:
             return True
@@ -15,14 +15,13 @@ def string_checker(string: str):
 
 
 # GUI
-
-## 1. Layout
-sg.theme("DarkAmber")
+## 1. Screen layout
+sg.theme("Purple")
 layout = [
     [sg.Text("Guess the Number!", font=("Source Sans Pro", 14, "bold"))],
     [sg.Text("Enter an integer from 0 to 100:", font=("Source Sans Pro", 11))],
     [sg.Input(key="X", size=(12, 0), justification="center")],
-    [sg.Button("Send", key="SEND", size=(10, 0), visible=True)],
+    [sg.Button("Enter", key="ENTER", size=(10, 0), visible=True, bind_return_key=True)],
     [
         sg.Text(
             size=(40, 1),
@@ -35,9 +34,7 @@ layout = [
 ]
 
 ## 2. Window
-window = sg.Window(
-    "Guess the number", element_justification="c", resizable=True
-).layout(layout)
+window = sg.Window("Guess the number", element_justification="c").layout(layout)
 
 
 ## 3. Window's logic
@@ -54,7 +51,7 @@ while True:
 
     # Make sure the user's input will be valid integers. If not, the program
     # won't run.
-    if not string_checker(values["X"]):
+    if not check_string(values["X"]):
         window["OUTPUT"].update("Only numbers between 0 and 100 are valid. :)")
 
     else:
@@ -68,7 +65,7 @@ while True:
 
         else:
             window["OUTPUT"].update("That's correct! How did you know?")
-            window["SEND"].update(visible=False)
+            window["ENTER"].update(visible=False)
 
             # When the guess is right, the play again button shows up on the
             # screen.
@@ -82,7 +79,7 @@ while True:
 
                 window["OUTPUT"].update("")
                 window["X"].update("")
-                window["SEND"].update(visible=True)
+                window["ENTER"].update(visible=True)
                 window["PLAY AGAIN"].update(visible=False)
 
                 continue
