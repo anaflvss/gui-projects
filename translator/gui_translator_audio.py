@@ -3,7 +3,6 @@ import PySimpleGUI as sg
 
 from utils import utils
 
-# import translator.utils as utils
 
 
 languages_dict = {value.capitalize(): key for (key, value) in gtrans.LANGUAGES.items()}
@@ -141,7 +140,5 @@ while True:
 window.close()
 
 
-## TODO (and other comments):
-
-# 3. This app only works for windows
+## TODO:
 # 5. there's a tiny delay from the events print and the update of user's input
