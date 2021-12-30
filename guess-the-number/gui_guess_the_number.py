@@ -16,7 +16,7 @@ def check_string(string: str):
 
 # GUI
 ## 1. Screen layout
-sg.theme("Purple")
+sg.theme("Black")
 layout = [
     [sg.Text("Guess the Number!", font=("Source Sans Pro", 14, "bold"))],
     [sg.Text("Enter an integer from 0 to 100:", font=("Source Sans Pro", 11))],
@@ -34,7 +34,9 @@ layout = [
 ]
 
 ## 2. Window
-window = sg.Window("Guess the number", element_justification="c").layout(layout)
+window = sg.Window(
+    "Guess the number", element_justification="c", resizable=True
+).layout(layout)
 
 
 ## 3. Window's logic
