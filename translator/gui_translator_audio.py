@@ -1,49 +1,98 @@
-import os
-
 import googletrans as gtrans
 import PySimpleGUI as sg
-from gtts import gTTS
-from playsound import playsound
+
+from utils import utils
+
+# import translator.utils as utils
 
 
 languages_dict = {value.capitalize(): key for (key, value) in gtrans.LANGUAGES.items()}
 languages = list(languages_dict.keys())
 
-
-def listen(voice_lang: str, speech_text: str, saved_file: str):
-    tts = gTTS(speech_text, lang=voice_lang)
-    tts.save(saved_file)
-    playsound(saved_file)
-    os.system("del " + saved_file)
-
-
 # GUI
 ## 1. Screen layout
 sg.theme("Reddit")
-layout = [
+
+col1 = [
     [
-        sg.Text("From", size=(4, 1), font=("Source Sans Pro", 12)),
-        sg.Combo(languages, key="-LANGUAGE_FROM-", size=(33, 1)),
-        sg.Text("To", size=(2, 1), font=("Source Sans Pro", 12)),
-        sg.Combo(languages, key="-LANGUAGE_TO-", size=(35, 1)),
+        sg.Combo(
+            languages,
+            key="-LANGUAGE_FROM-",
+            size=(38, 1),
+            default_value="English",
+            background_color=sg.theme_background_color(),
+        )
     ],
     [
-        sg.Multiline(key="-INPUT-", size=(40, 10)),
-        sg.Multiline(key="-OUTPUT-", size=(40, 10), disabled=True),
-    ],
-    [
-        sg.Button("Sound", key="-SOUND_FROM-"),
-        sg.Button("Sound", key="-SOUND_TO-"),
+        sg.Multiline(
+            key="-INPUT-",
+            size=(40, 10),
+            # background_color=sg.theme_background_color(),
+            border_width=0,
+            no_scrollbar=True,
+        )
     ],
     [
         sg.Button(
-            "Translate", key="ENTER", size=(10, 0), visible=True, bind_return_key=True
+            "",
+            key="-SOUND_FROM-",
+            border_width=0,
+            image_data=utils.button_sound_base64,
+            button_color=sg.theme_element_background_color(),
+        )
+    ],
+]
+
+col2 = [
+    [
+        sg.Combo(
+            languages,
+            key="-LANGUAGE_TO-",
+            size=(38, 1),
+            default_value="Portuguese",
+            background_color=sg.theme_background_color(),
+        )
+    ],
+    [
+        sg.Multiline(
+            key="-OUTPUT-",
+            size=(40, 10),
+            disabled=True,
+            # background_color=sg.theme_background_color(),
+            border_width=0,
+            no_scrollbar=True,
+        )
+    ],
+    [
+        sg.Button(
+            "",
+            key="-SOUND_TO-",
+            border_width=0,
+            image_data=utils.button_sound_base64,
+            button_color=sg.theme_element_background_color(),
+        )
+    ],
+]
+
+layout = [
+    [
+        sg.Column(col1, element_justification="c"),
+        sg.Column(col2, element_justification="c"),
+    ],
+    [
+        sg.Button(
+            "Translate",
+            key="ENTER",
+            size=(20, 0),
+            visible=True,
+            bind_return_key=True,
+            border_width=0,
         )
     ],
 ]
 
 ## 2. Window
-window = sg.Window("Translator").layout(layout)
+window = sg.Window("Translator", element_justification="c").layout(layout)
 
 
 while True:
@@ -51,48 +100,48 @@ while True:
     event, values = window.Read()
     print(event, values)
 
-    translate_from = values["-LANGUAGE_FROM-"]
-    translate_to = values["-LANGUAGE_TO-"]
+    translate_from = values["-LANGUAGE_FROM-"].capitalize()
+    translate_to = values["-LANGUAGE_TO-"].capitalize()
 
-    if event == None:
+    if event in (sg.WIN_CLOSED, "Exit", None):
         break
 
     if event == "ENTER":
 
-        translator = gtrans.Translator()
-        translation = translator.translate(
-            values["-INPUT-"],
-            src=languages_dict[translate_from],
-            dest=languages_dict[translate_to],
-        ).text
+        # Empty inputs won't break the application
+        if not values["-INPUT-"]:
+            pass
 
-        window["-OUTPUT-"].Update(translation)
+        else:
+            translator = gtrans.Translator()
+            translation = translator.translate(
+                values["-INPUT-"],
+                src=languages_dict[translate_from],
+                dest=languages_dict[translate_to],
+            ).text
 
-        # window["-SOUND_FROM-"].Update(visible=True)
-        # window["-SOUND_TO-"].Update(visible=True)
+            window["-OUTPUT-"].Update(translation)
 
     if event == "-SOUND_FROM-":
 
-        listen(
+        utils.listen(
             voice_lang=languages_dict[translate_from],
             speech_text=values["-INPUT-"],
             saved_file="sound_from.mp3",
         )
 
     if event == "-SOUND_TO-":
-        listen(
+        utils.listen(
             voice_lang=languages_dict[translate_to],
             speech_text=values["-OUTPUT-"],
             saved_file="sound_to.mp3",
         )
 
+
 window.close()
 
 
 ## TODO (and other comments):
-# 1. when there's no user input, the app crashes. Fix that!
-# 2. Improve layout, specially the sound buttons and style
+
 # 3. This app only works for windows
-# 4. Make sure gtts has all the languages from gtrans. Otherwise, address the
-#  exception
 # 5. there's a tiny delay from the events print and the update of user's input
