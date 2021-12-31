@@ -4,7 +4,6 @@ import PySimpleGUI as sg
 from utils import utils
 
 
-
 languages_dict = {value.capitalize(): key for (key, value) in gtrans.LANGUAGES.items()}
 languages = list(languages_dict.keys())
 
@@ -12,6 +11,7 @@ languages = list(languages_dict.keys())
 ## 1. Screen layout
 sg.theme("Reddit")
 
+# define column elements
 col1 = [
     [
         sg.Combo(
@@ -38,7 +38,8 @@ col1 = [
             border_width=0,
             image_data=utils.button_sound_base64,
             button_color=sg.theme_element_background_color(),
-        )
+            # visible=False,
+        ),
     ],
 ]
 
@@ -69,9 +70,11 @@ col2 = [
             border_width=0,
             image_data=utils.button_sound_base64,
             button_color=sg.theme_element_background_color(),
+            # visible=False,
         )
     ],
 ]
+
 
 layout = [
     [
@@ -81,7 +84,7 @@ layout = [
     [
         sg.Button(
             "Translate",
-            key="ENTER",
+            key="-TRANSLATE-",
             size=(20, 0),
             visible=True,
             bind_return_key=True,
@@ -97,21 +100,23 @@ window = sg.Window("Translator", element_justification="c").layout(layout)
 while True:
 
     event, values = window.Read()
-    print(event, values)
+    print(event)
 
+    # Fixes passible typo in user's input
     translate_from = values["-LANGUAGE_FROM-"].capitalize()
     translate_to = values["-LANGUAGE_TO-"].capitalize()
 
-    if event in (sg.WIN_CLOSED, "Exit", None):
+    if event == None or event == sg.WIN_CLOSED:
         break
 
-    if event == "ENTER":
+    if event == "-TRANSLATE-":
 
         # Empty inputs won't break the application
         if not values["-INPUT-"]:
-            pass
+            window["-OUTPUT-"].Update("")
 
         else:
+
             translator = gtrans.Translator()
             translation = translator.translate(
                 values["-INPUT-"],
@@ -121,6 +126,7 @@ while True:
 
             window["-OUTPUT-"].Update(translation)
 
+    # Generate audio if the user clicks on sound buttons
     if event == "-SOUND_FROM-":
 
         utils.listen(
@@ -138,7 +144,3 @@ while True:
 
 
 window.close()
-
-
-## TODO:
-# 5. there's a tiny delay from the events print and the update of user's input
