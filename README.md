@@ -1,4 +1,4 @@
-# python-gui-projects
+# gui-projects
 
 This repo contains two little projects for practicing with GUI development. Both of them were built using the [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/) framework.
 
