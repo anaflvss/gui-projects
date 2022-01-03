@@ -21,6 +21,6 @@ This repo contains two small projects of GUI development for practicing. Both of
 
 
 ## Requirements
-All projects dependencies are listed in a requirements.txt file, and each project has its own file.
+All projects dependencies are listed in a `requirements.txt` file. Each project has its own file.
 
 ## References
